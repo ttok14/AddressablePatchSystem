@@ -6,18 +6,20 @@ using UnityEngine.UI;
 
 public class DownloadPopup : MonoBehaviour
 {
+	/// <summary> 팝업 상태 </summary>
 	public enum State
 	{
 		None = 0,
 
-		CalculatingSize,
-		NothingToDownload,
+		CalculatingSize,		   /* 다운로드 받을 컨텐츠가 존재하는지 확인 */
+		NothingToDownload,	/* 다운로드 받을 게 없음 */
 
-		AskingDownload,
-		Downloading,
-		DownloadFinished
+		AskingDownload,		    /* 다운로드 받을지 물어봄 */
+		Downloading,               /* 다운로드 진행중 */
+		DownloadFinished        /* 다운로드 끝 */
 	}
 
+	/// <summary> 상태별 게임오브젝트 활성화 조작용 </summary>
 	[Serializable]
 	public class Root
 	{
@@ -25,31 +27,43 @@ public class DownloadPopup : MonoBehaviour
 		public Transform root;
 	}
 
+	/// <summary> 상태별 루트 게임오브젝트들 </summary>
 	[SerializeField]
 	List<Root> roots;
 
+	/// <summary> 팝업 타이틀 텍스트 </summary>
 	[SerializeField]
 	Text txtTitle;
 
+	/// <summary> 팝업 상태 설명 텍스트 </summary>
 	[SerializeField]
 	Text txtDesc;
 
+	/// <summary> 다운로드 진행 프로그레스바에 위치한 텍스트 </summary>
 	[SerializeField]
 	Text downloadingBarStatus;
 
+	/// <summary> 다운로드 프로그레스 바 </summary>
 	[SerializeField]
 	Slider downloadProgressBar;
 
+	/// <summary> 다운로드 컨트롤러 - 다운로드 관련 작업 수행 </summary>
 	[SerializeField]
 	DownloadController Downloader;
 
+	/// <summary> 다운로드 진행중 데이터  </summary>
 	DownloadProgressStatus progressInfo;
+	/// <summary> 다운로드 사이즈 단위 </summary>
 	SizeUnits sizeUnit;
+	/// <summary> 단위 변환된 현재 다운로드된 사이즈 </summary>
 	long curDownloadedSizeInUnit;
+	/// <summary> 단위 변환된 총 사이즈 </summary>
 	long totalSizeInUnit;
 
+	/// <summary> 현재 상태 </summary>
 	public State CurrentState { get; private set; } = State.None;
 
+	/// <summary> 다운로드 루틴 시작 , 씬 시작시 호출 </summary>
 	IEnumerator Start()
     {
 		SetState(State.CalculatingSize, true);
@@ -64,6 +78,7 @@ public class DownloadPopup : MonoBehaviour
 		});
 	}
 
+	/// <summary> 팝업 상태 변경한다 </summary>
 	void SetState(State newState, bool updateUI)
 	{
 		var prevRoot = roots.Find(t => t.state == CurrentState);
@@ -87,6 +102,7 @@ public class DownloadPopup : MonoBehaviour
 		}
 	}
 
+	/// <summary> UI 를 업데이트한다 </summary>
 	void UpdateUI()
 	{
 		if (CurrentState == State.CalculatingSize)
@@ -119,6 +135,9 @@ public class DownloadPopup : MonoBehaviour
 		}
 	}
 
+	// ---------------------------------------------------------------------------------------------------- //
+
+	/// <summary> 다운로드 시작 버튼 클릭시 호출 </summary>
 	public void OnClickStartDownload()
 	{
 		Debug.Log("다운로드를 시작합니다");
@@ -127,6 +146,7 @@ public class DownloadPopup : MonoBehaviour
 		Downloader.GoNext();
 	}
 
+	/// <summary> 취소 버튼 클릭시 호출 </summary>
 	public void OnClickCancelBtn()
 	{
 #if UNITY_EDITOR
@@ -139,6 +159,7 @@ public class DownloadPopup : MonoBehaviour
 #endif
 	}
 
+	/// <summary> 인게임 진입 버튼 클릭시 호출 </summary>
 	public void OnClickEnterGame()
 	{
 		Debug.Log("Start Game!");
@@ -146,16 +167,19 @@ public class DownloadPopup : MonoBehaviour
 		UnityEngine.SceneManagement.SceneManager.LoadScene(1);
 	}
 
+	/// <summary> 초기화 완료시 호출 </summary>
 	private void OnInitialized()
 	{
 		Downloader.GoNext();
 	}
 
+	/// <summary> 카탈로그 업데이트 완료시 호출 </summary>
 	private void OnCatalogUpdated()
 	{
 		Downloader.GoNext();
 	}
 
+	/// <summary> 사이즈 다운로드 완료시 호출 </summary>
 	private void OnSizeDownloaded(long size)
 	{
 		Debug.Log($"다운로드 사이즈 다운로드 완료 ! : {size} 바이트");
@@ -173,6 +197,7 @@ public class DownloadPopup : MonoBehaviour
 		}
 	}
 
+	/// <summary> 다운로드 진행중 호출 </summary>
 	private void OnDownloadProgress(DownloadProgressStatus newInfo)
 	{
 		bool changed = this.progressInfo.downloadedBytes != newInfo.downloadedBytes;
@@ -187,6 +212,7 @@ public class DownloadPopup : MonoBehaviour
 		}
 	}
 
+	/// <summary> 다운로드 마무리시 호출 </summary>
 	private void OnDownloadFinished(bool isSuccess)
 	{
 		Debug.Log("다운로드 완료 ! 결과 : " + isSuccess);
