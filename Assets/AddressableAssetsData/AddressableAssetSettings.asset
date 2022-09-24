@@ -78,7 +78,7 @@ MonoBehaviour:
       - m_Id: 1f338c0c42c5ce646be620111bc0d4b0
         m_Value: ServerData/[BuildTarget]
       - m_Id: 51e5054aff563c0439082880e93a859e
-        m_Value: http://localhost/Android
+        m_Value: '{AddressableDownloader.DownloadURL}'
     m_ProfileEntryNames:
     - m_Id: c31bbc8b8dcfe4648a883f3153e66d86
       m_Name: BuildTarget
