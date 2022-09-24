@@ -27,4 +27,9 @@ public class Ingame : MonoBehaviour
             }
         };
     }
+
+    public void OnClickGoDownloadScene()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+    }
 }
