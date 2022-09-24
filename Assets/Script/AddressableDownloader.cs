@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.AddressableAssets.ResourceLocators;
+using UnityEngine.ResourceManagement;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class AddressableDownloader
@@ -25,6 +27,8 @@ public class AddressableDownloader
 
         DownloadURL = downloadURL;
         LabelToDownload = label;
+
+        ResourceManager.ExceptionHandler += OnException;
 
         return Events;
     }
@@ -94,5 +98,10 @@ public class AddressableDownloader
     void OnDependenciesDownloaded(AsyncOperationHandle result)
     {
         Events.NotifyDownloadFinished(result.Status == AsyncOperationStatus.Succeeded);
+    }
+
+    void OnException(AsyncOperationHandle handle, Exception exception)
+    {
+        Debug.LogError(exception.Message);
     }
 }
